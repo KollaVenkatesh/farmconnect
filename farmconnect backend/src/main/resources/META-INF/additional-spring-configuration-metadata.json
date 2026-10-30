@@ -1,0 +1,69 @@
+{
+    "properties":  [
+                       {
+                           "name":  "spring.mongodb.uri",
+                           "type":  "java.lang.String",
+                           "description":  "MongoDB connection URI."
+                       },
+                       {
+                           "name":  "jwt.secret",
+                           "type":  "java.lang.String",
+                           "description":  "Secret key used to sign JWTs."
+                       },
+                       {
+                           "name":  "jwt.expiration-ms",
+                           "type":  "java.lang.Long",
+                           "defaultValue":  86400000,
+                           "description":  "JWT validity duration in milliseconds."
+                       },
+                       {
+                           "name":  "razorpay.key-id",
+                           "type":  "java.lang.String",
+                           "description":  "Razorpay platform API key ID."
+                       },
+                       {
+                           "name":  "razorpay.key-secret",
+                           "type":  "java.lang.String",
+                           "description":  "Razorpay platform API secret."
+                       },
+                       {
+                           "name":  "razorpay.webhook-secret",
+                           "type":  "java.lang.String",
+                           "description":  "Secret used to verify Razorpay webhook signatures."
+                       },
+                       {
+                           "name":  "farmconnect.mail.from",
+                           "type":  "java.lang.String",
+                           "defaultValue":  "notifications@farmconnect.com",
+                           "description":  "Sender email address for notifications."
+                       },
+                       {
+                           "name":  "farmconnect.mail.enabled",
+                           "type":  "java.lang.Boolean",
+                           "defaultValue":  true,
+                           "description":  "Whether email notifications are enabled."
+                       },
+                       {
+                           "name":  "openai.api-key",
+                           "type":  "java.lang.String",
+                           "description":  "OpenAI API key supplied through OPENAI_API_KEY."
+                       },
+                       {
+                           "name":  "openai.model",
+                           "type":  "java.lang.String",
+                           "defaultValue":  "gpt-4.1-mini",
+                           "description":  "OpenAI model used for chat and recipe suggestions."
+                       },
+                       {
+                           "name":  "openai.base-url",
+                           "type":  "java.lang.String",
+                           "defaultValue":  "https://api.openai.com",
+                           "description":  "Base URL for the OpenAI chat completions API."
+                        },
+                        {
+                            "name":  "app.cors.allowed-origins",
+                            "type":  "java.lang.String",
+                            "description":  "Allowed browser origins for the backend CORS policy."
+                       }
+                   ]
+}

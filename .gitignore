@@ -1,0 +1,11 @@
+application-secrets.properties
+**/application-secrets.properties
+**/node_modules/
+**/dist/
+**/target/
+**/runtime-logs/
+**/*.log
+**/.m2/
+**/*.class
+**/.env
+**/.env.*

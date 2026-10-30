@@ -1,0 +1,200 @@
+{
+  "info": {
+    "name": "FarmConnect Ecommerce API",
+    "description": "Smoke tests for the frontend-facing auth, marketplace, and cart APIs. Set baseUrl and unique account values before running.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api"
+    },
+    {
+      "key": "userId",
+      "value": "farmconnect-test-user"
+    },
+    {
+      "key": "email",
+      "value": "farmconnect-test@example.com"
+    },
+    {
+      "key": "password",
+      "value": "ChangeThisPassword123!"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "productId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Register account",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"FarmConnect Test User\",\n  \"userId\": \"{{userId}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"Buyer\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Registration succeeds for a new account', function () { pm.response.to.have.status(200); pm.expect(pm.response.text().toLowerCase()).to.include('registered successfully'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login and save JWT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login succeeds', function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test('Login returns JWT and user data', function () { pm.expect(data.token).to.be.a('string').and.not.empty; pm.expect(data.user).to.be.an('object'); });",
+              "pm.collectionVariables.set('token', data.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List marketplace products and save first ID",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/products"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Products endpoint succeeds', function () { pm.response.to.have.status(200); });",
+              "const products = pm.response.json();",
+              "pm.test('Products use the frontend field names', function () { pm.expect(products).to.be.an('array'); if (products.length) { pm.expect(products[0]).to.have.property('id'); pm.expect(products[0]).to.have.property('name'); pm.expect(products[0]).to.have.property('price'); pm.expect(products[0]).to.have.property('unit'); } });",
+              "if (products.length) pm.collectionVariables.set('productId', products[0].id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get authenticated cart",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/cart"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Cart endpoint accepts JWT', function () { pm.response.to.have.status(200); });",
+              "const cart = pm.response.json();",
+              "pm.test('Cart response matches frontend shape', function () { pm.expect(cart.count).to.be.a('number'); pm.expect(cart.items).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Add first product to cart",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"{{productId}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/cart"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Adding a product succeeds', function () { pm.response.to.have.status(200); });",
+              "const cart = pm.response.json();",
+              "pm.test('Added product appears in cart', function () { pm.expect(cart.count).to.be.above(0); pm.expect(cart.items).to.be.an('array').that.is.not.empty; });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
