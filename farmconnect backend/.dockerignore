@@ -1,0 +1,8 @@
+.git
+.m2
+target
+*.log
+application-secrets.properties
+.env
+.env.*
+*.class
